@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #101417;
+  --surface: #171c1f;
+  --text: #eee8dd;
+  --muted: #aeb0a3;
+  --pink: #d1968b;
+  --green: #749c85;
+}
+
+html {
+  font-feature-settings: "liga", "calt";
+}

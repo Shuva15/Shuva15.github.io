@@ -1,0 +1,53 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <main class="h-screen flex items-center justify-center">
+    <div class="w-full max-w-4xl px-6 flex flex-col items-center gap-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl font-semibold text-(--pink)">Shuva</h1>
+
+        <p class="text-(--muted) max-w-xl leading-relaxed">
+          I build things to understand how systems work. Currently learning
+          Rust, networking, and distributed systems.
+        </p>
+      </section>
+
+      <section class="flex gap-6">
+        <a
+          href="/blog"
+          class="px-6 py-3 border border-(--green)
+                  text-(--green)
+                  hover:bg-(--green)
+                  hover:text-(--bg)
+                  transition rounded-md"
+        >
+          Writing
+        </a>
+
+        <a
+          href="/projects"
+          class="px-6 py-3 border border-(--green)
+                  text-(--green)
+                  hover:bg-(--green)
+                  hover:text-(--bg)
+                  transition rounded-md"
+        >
+          Projects
+        </a>
+
+        <a
+          href="/contact"
+          class="px-6 py-3 border border-(--green)
+                  text-(--green)
+                  hover:bg-(--green)
+                  hover:text-(--bg)
+                  transition rounded-md"
+        >
+          Contact
+        </a>
+      </section>
+    </div>
+  </main>
+</Layout>

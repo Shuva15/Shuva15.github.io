@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BlogBrowser from "../components/BlogBrowser.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("blog");
+---
+
+<Layout>
+  <BlogBrowser posts={posts} client:load />
+</Layout>

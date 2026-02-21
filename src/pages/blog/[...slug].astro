@@ -1,0 +1,95 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const { Content } = await render(post);
+
+// Navigation inside the same collection
+const posts = await getCollection("blog");
+
+const sameCollection = posts
+  .filter((p) => p.data.collection === post.data.collection)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+
+const index = sameCollection.findIndex((p) => p.slug === post.slug);
+
+const prev = sameCollection[index - 1];
+const next = sameCollection[index + 1];
+---
+
+<Layout>
+  <main class="min-h-screen flex justify-center px-6 py-16">
+    <article class="w-full max-w-3xl space-y-12">
+      <!-- Back -->
+      <a
+        href="/blog"
+        class="text-sm text-(--muted) hover:text-(--pink) transition"
+      >
+        ← Back to blog
+      </a>
+
+      <!-- Header -->
+      <header class="space-y-3">
+        <h1 class="text-4xl font-semibold text-(--pink) leading-tight">
+          {post.data.title}
+        </h1>
+
+        <div class="text-sm text-(--muted)">
+          {post.data.date.toDateString()} · {post.data.collection}
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div
+        class="prose prose-invert max-w-none
+               prose-headings:text-[var(--pink)]
+               prose-a:text-[var(--green)]
+               prose-strong:text-[var(--text)]
+               prose-code:text-[var(--green)]"
+      >
+        <Content />
+      </div>
+
+      <!-- Prev / Next -->
+      <footer class="flex justify-between pt-12 border-t border-(--surface)">
+        <div>
+          {
+            prev && (
+              <a
+                href={`/blog/${prev.slug}`}
+                class="text-sm text-(--green) hover:text-(--pink) transition"
+              >
+                ← {prev.data.title}
+              </a>
+            )
+          }
+        </div>
+
+        <div>
+          {
+            next && (
+              <a
+                href={`/blog/${next.slug}`}
+                class="text-sm text-(--green) hover:text-(--pink) transition"
+              >
+                {next.data.title} →
+              </a>
+            )
+          }
+        </div>
+      </footer>
+    </article>
+  </main>
+</Layout>

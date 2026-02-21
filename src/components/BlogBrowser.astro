@@ -1,0 +1,156 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+}
+
+const { posts } = Astro.props;
+const collections = Array.from(new Set(posts.map((p) => p.data.collection)));
+---
+
+<div id="blog-browser" class="h-screen flex">
+  <!-- LEFT: Collections -->
+  <aside class="w-[30%] px-8 py-10 border-r border-(--surface)">
+    <h2 class="text-lg text-(--pink) mb-6">Collections</h2>
+
+    <ul class="space-y-3">
+      <li>
+        <button
+          data-collection="all"
+          class="collection-btn w-full text-left px-3 py-2 rounded-md
+                 text-(--green)
+                 hover:bg-(--surface)
+                 hover:text-(--pink)
+                 transition"
+        >
+          All Blogs
+        </button>
+      </li>
+
+      {
+        collections.map((col) => (
+          <li>
+            <button
+              data-collection={col}
+              class="collection-btn w-full text-left px-3 py-2 rounded-md
+                   text-(--green)
+                   hover:bg-(--surface)
+                   hover:text-(--pink)
+                   transition"
+            >
+              {col}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="pt-4">
+        <a
+          href="/"
+          class="text-sm text-(--green) hover:text-(--pink) transition"
+        >
+          ← Back home
+        </a>
+      </div>
+  </aside>
+
+  <!-- RIGHT: Blog List -->
+  <section class="flex-1 px-10 py-10">
+    <div class="flex items-center justify-between mb-8">
+      <h1 id="blog-title" class="text-2xl text-(--pink)">All Blogs</h1>
+
+      <button
+        id="sort-toggle"
+        class="text-sm text-(--muted) hover:text-(--pink) transition"
+      >
+        Latest
+      </button>
+    </div>
+
+    <div id="blog-list" class="space-y-6">
+      {
+        posts.map((post) => (
+          <div
+            class="blog-item p-4 rounded-md bg-(--surface)"
+            data-collection={post.data.collection}
+            data-date={post.data.date.getTime()}
+          >
+            <a
+              href={`/blog/${post.slug}`}
+              class="block text-lg hover:text-(--pink) transition"
+            >
+              {post.data.title}
+            </a>
+
+            <div class="text-sm text-(--muted)">
+              {post.data.date.toDateString()}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</div>
+
+<script>
+  const buttons =
+    document.querySelectorAll<HTMLButtonElement>(".collection-btn");
+  const items = document.querySelectorAll<HTMLElement>(".blog-item");
+  const title = document.getElementById("blog-title")!;
+  const sortBtn = document.getElementById("sort-toggle")!;
+  const list = document.getElementById("blog-list")!;
+
+  let currentCollection = "all";
+  let sortOrder = "latest";
+
+  function applyFilter() {
+    items.forEach((item) => {
+      const col = item.dataset.collection;
+      item.classList.toggle(
+        "hidden",
+        !(currentCollection === "all" || col === currentCollection),
+      );
+    });
+  }
+
+  function applySort() {
+    const sorted = Array.from(items).sort((a, b) => {
+      const da = Number(a.dataset.date);
+      const db = Number(b.dataset.date);
+      return sortOrder === "latest" ? db - da : da - db;
+    });
+
+    sorted.forEach((el) => list.appendChild(el));
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) =>
+        b.classList.remove("bg-[var(--surface)]", "text-[var(--pink)]"),
+      );
+
+      btn.classList.add("bg-[var(--surface)]", "text-[var(--pink)]");
+
+      currentCollection = btn.dataset.collection!;
+      title.textContent =
+        currentCollection === "all" ? "All Blogs" : currentCollection;
+
+      applyFilter();
+
+      //Reset scroll to top
+      window.scrollTo({
+        top: 0,
+        behavior: "instant",
+      });
+    });
+  });
+
+  sortBtn.addEventListener("click", () => {
+    sortOrder = sortOrder === "latest" ? "oldest" : "latest";
+    sortBtn.textContent = sortOrder === "latest" ? "Latest" : "Oldest";
+    applySort();
+  });
+
+  applySort();
+</script>
